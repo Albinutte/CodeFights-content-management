@@ -112,29 +112,29 @@ class CodeFightsCommand(sublime_plugin.TextCommand):
             self.thread.start()
             self.handle_thread()
         else:
-            self.append_data("Something went wrong; is any file open?\n")
+            self.to_panel("Something went wrong; is any file open?\n")
 
     def handle_thread(self):
         if self.thread is None:
             if self.killed:
                 self.killed = False
             else:
-                self.append_data('No process to launch!\n')
+                self.to_panel('No process to launch!\n')
             return
 
         if self.thread.is_alive():
             while not self.thread.queue.empty():
                 line = self.thread.queue.get()
-                self.append_data(line)
+                self.to_panel(line)
             sublime.set_timeout(self.handle_thread, 100)
         while not self.thread.queue.empty():
             line = self.thread.queue.get()
-            self.append_data(line)
+            self.to_panel(line)
         if self.thread.result is True:
-            self.append_data('\nFinished successfully.\n')
+            self.to_panel('\nFinished successfully.\n')
         elif self.thread.result is False:
-            self.append_data('\nFinished with an error.\n')
-            self.append_data(self.thread.error)
+            self.to_panel('\nFinished with an error.\n')
+            self.to_panel(self.thread.error)
         if self.thread.result is not None:
             self.view.run_command('revert')
             self.thread = None
@@ -251,7 +251,6 @@ class CodeFightsOutputsGenerator(threading.Thread):
             final_ext = None
             for ext in exts:
                 res = generateOutputs.main(["", self.task_name, ext, '-r'], False)
-                print res
                 if res:
                     final_ext = ext
                     break
