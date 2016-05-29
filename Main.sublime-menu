@@ -89,7 +89,7 @@
                         [
                             {
                                 "command": "open_file",
-                                "args": {"file": "${packages}/CodeFights-sublime2-plugin/CodeFights.sublime-settings"},
+                                "args": {"file": "${packages}/CodeFights-content-management/CodeFights.sublime-settings"},
                                 "caption": "Settings – Default"
                             },
                             {
@@ -103,7 +103,7 @@
                             {
                                 "command": "open_file",
                                 "args": {
-                                    "file": "${packages}/CodeFights-sublime2-plugin/Default (Windows).sublime-keymap",
+                                    "file": "${packages}/CodeFights-content-management/Default (Windows).sublime-keymap",
                                     "platform": "Windows"
                                 },
                                 "caption": "Key Bindings – Default"
@@ -111,7 +111,7 @@
                             {
                                 "command": "open_file",
                                 "args": {
-                                    "file": "${packages}/CodeFights-sublime2-plugin/Default (OSX).sublime-keymap",
+                                    "file": "${packages}/CodeFights-content-management/Default (OSX).sublime-keymap",
                                     "platform": "OSX"
                                 },
                                 "caption": "Key Bindings – Default"
@@ -119,7 +119,7 @@
                             {
                                 "command": "open_file",
                                 "args": {
-                                    "file": "${packages}/CodeFights-sublime2-plugin/Default (Linux).sublime-keymap",
+                                    "file": "${packages}/CodeFights-content-management/Default (Linux).sublime-keymap",
                                     "platform": "Linux"
                                 },
                                 "caption": "Key Bindings – Default"

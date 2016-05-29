@@ -2,7 +2,7 @@
 Sublime plugin for CodeFights content team.
 
 **Installation:** 
-Download repository as a folder and move it into your Packages folder (the one that opens by `Preferences -> Browse Packages`). Restart Sublime if it was open.
+Download repository as a `CodeFights-content-management` folder and move it into your Packages folder (the one that opens by `Preferences -> Browse Packages`). Restart Sublime if it was open.
 
 **Usage:**
  * `ctrl+shift+c`:
