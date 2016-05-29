@@ -1,0 +1,7 @@
+/*
+    CodeFights default settings
+*/
+{
+    // default extension to generate outputs from
+    "generate_from": "py"
+}
