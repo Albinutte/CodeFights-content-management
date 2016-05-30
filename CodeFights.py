@@ -69,7 +69,10 @@ class CodeFightsCommand(sublime_plugin.TextCommand):
                 return
 
             file_ext = file_name[-1]
-            args = [arg for arg in valid_args if locals()[arg]]
+            args = []
+            for arg in valid_args:
+                if eval(arg):
+                    args.append(arg)
             command = None
 
             if len(args) == 0:
