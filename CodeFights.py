@@ -23,41 +23,34 @@ else:
 
 
 class CodeFightsCommand(sublime_plugin.TextCommand):
-    def run(self, edit, 
-            generateOutputs_or_validate=False,
-            validator_ext=None, generator_ext=None,
-            bugfixes_or_getLimits=False, 
-            upd=None, bog_command=None,
-            check_style=False, 
-            style_checker_ext=None, style_fix=None,            
+    def run(self, edit,
+            generateOutputs=False, generator_ext=None,
+            validate=False, validator_ext=None,
+            autoBugfixes=False,
+            getLimits=False, update_limits=None,
+            styleChecker=False, styleChecker_ext=None, styleChecker_fix=None,
             kill=False):
-        """Main command.
 
-        Args:
-            generateOutputs_or_validate -- launches on ctrl+shift+c
-                validator_ext -- 'py', 'cpp', 'java', 'js', 'ALL'
-                generator_ext -- where to start, 'py', 'cpp', 'java', 'js'
-            bugfixes_or_getLimits -- launches on ctrl+shift+m
-                upd -- getLimits key, if true updates README
-                bog_command -- if None, command is determined by extension
-                               if True, bugfixes is launched
-                               if False, getLimits is launched
-            check_style -- launches on ctrl+shift+h
-                style_checker_ext -- 'py', 'cpp', 'java', 'js', 'ALL'
-                style_fix -- if true, fixes solutions
-            kill -- launches on ctrl+h
-        """
-
+        valid_args = ['generateOutputs', 'validate', 'autoBugfixes', 'getLimits', 'styleChecker']
+        ext_by_arg = {
+            'generateOutputs': ['json'],
+            'validate': ['py', 'js', 'java', 'cpp', 'md'],
+            'autoBugfixes': ['py'],
+            'getLimits': ['md'],
+            'styleChecker': ['py', 'js', 'java', 'cpp', 'md']
+        }
+        arg_by_ext = {}
+        for arg in ext_by_arg:
+            for ext in ext_by_arg[arg]:
+                arg_by_ext.setdefault(ext, []).append(arg)
         self.killed = False
 
         if kill:
-            if self.thread is not None:
+            if hasattr(self, 'thread') and self.thread is not None:
                 self.thread = None
                 self.killed = True
                 self.to_panel("\nCodeFights execution killed.\n")
             return
-
-        settings = sublime.load_settings('CodeFights.sublime-settings')
 
         if is_ST3():
             self.panel = self.view.window().create_output_panel('codefights_output')
@@ -75,38 +68,54 @@ class CodeFightsCommand(sublime_plugin.TextCommand):
                 self.to_panel("The file has no extension!\n")
                 return
 
-            if generateOutputs_or_validate:
-                if generator_ext is not None or file_name[1] == 'json' and validator_ext is None:
-                    if generator_ext is None:
-                        generator_ext = settings.get('generate_from')
-                    self.thread = CodeFightsOutputsGenerator(task_name, data_folder, generator_ext)
-                elif validator_ext is not None or file_name[1] in ['py', 'js', 'java', 'cpp', 'md']:
-                    if validator_ext is None:
-                        validator_ext = file_name[1]
-                    self.thread = CodeFightsValidator(task_name, data_folder, validator_ext)
+            file_ext = file_name[-1]
+            args = [arg for arg in valid_args if locals()[arg]]
+            command = None
+
+            if len(args) == 0:
+                self.to_panel("No argument specified!\n")
+                return
+            elif len(args) == 1:
+                if file_ext in ext_by_arg[args[0]]:
+                    command = args[0]
                 else:
-                    self.to_panel("Incorrect file extension! Expected \
-                        'py', 'java', 'cpp', 'js', 'json' or 'md'\n")
-                    return
-            elif bugfixes_or_getLimits:
-                if bog_command is None and file_name[1] == 'py' or bog_command is True:
-                    self.thread = CodeFightsBugfixes(task_name, data_folder, file_name[1], full_path)
-                elif bog_command is None and file_name[1] == 'md' or bog_command is False:
-                    self.thread = CodeFightsGetLimits(task_name, data_folder, upd)
-                else:
-                    self.to_panel("Incorrect file extension! Expected 'py' or 'md'\n")
-                    return
-            elif check_style:
-                if style_checker_ext is None:
-                    style_checker_ext = file_name[1]
-                if style_checker_ext in ['py', 'java', 'js', 'cpp', 'md']:
-                    self.thread = CodeFightsStyleChecker(task_name, data_folder, style_checker_ext, style_fix)
-                else:
-                    self.to_panel("Incorrect file extension! Expected \
-                        'py', 'java', 'cpp', 'js', 'json' or 'md'\n")
+                    self.to_panel("Invalid file extension! Expected one of the following: {0}\n".\
+                        format(ext_by_arg[args[0]]))
                     return
             else:
-                self.to_panel("Incorrect command!\n")
+                found_command = None
+                for arg in args:
+                    if file_ext in ext_by_arg[arg]:
+                        if found_command is None:
+                            found_command = arg
+                        else:
+                            self.to_panel("Ambiguous arguments for the current file extension!\n")
+                            return
+                if found_command is None:
+                    self.to_panel("Invalid file extension!\n")
+                    return
+                command = found_command
+
+            if command == 'generateOutputs':
+                settings = sublime.load_settings('CodeFights.sublime-settings')
+                if generator_ext is None:
+                    generator_ext = settings.get('generate_from')                
+                self.thread = CodeFightsOutputsGenerator(task_name, data_folder, generator_ext)
+            elif command == 'validate':
+                if validator_ext is None:
+                    validator_ext = file_ext
+                self.thread = CodeFightsValidator(task_name, data_folder, validator_ext)
+            elif command == 'autoBugfixes':
+                self.thread = CodeFightsBugfixes(task_name, data_folder, file_ext, full_path)
+            elif command == 'getLimits':
+                self.thread = CodeFightsGetLimits(task_name, data_folder, update_limits)
+            elif command == 'styleChecker':
+                if styleChecker_ext is None:
+                    styleChecker_ext = file_ext
+                self.thread = CodeFightsStyleChecker(task_name, data_folder, 
+                                                     styleChecker_ext, styleChecker_fix)
+            else:
+                self.to_panel("No command found!\n")
                 return
 
             self.thread.start()
@@ -138,6 +147,7 @@ class CodeFightsCommand(sublime_plugin.TextCommand):
         if self.thread.result is not None:
             self.view.run_command('revert')
             self.thread = None
+
 
     def to_panel(self, txt):
         if is_ST3():

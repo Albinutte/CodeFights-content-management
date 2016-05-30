@@ -4,7 +4,7 @@
            meta.json: generateOutputs
            <task>.<ext>: validate current snippet
            README.md: validate all snippets */
-        "keys": ["ctrl+shift+c"], "command": "code_fights", "args": {"generateOutputs_or_validate": true}
+        "keys": ["ctrl+shift+c"], "command": "code_fights", "args": {"generateOutputs": true, "validate": true}
     },
     { 
         /* Kills current process */
@@ -14,12 +14,12 @@
         /* Launches various scripts depending on which file is open:
            <task>.py: automaticalBugfixes
            README.md: getLimits */
-        "keys": ["ctrl+shift+m"], "command": "code_fights", "args": {"bugfixes_or_getLimits": true, "upd": true}
+        "keys": ["ctrl+shift+m"], "command": "code_fights", "args": {"autoBugfixes": true, "getLimits": true, "update_limits": true}
     },
     {
         /* Lunches style checker:
            <task>.<ext>: current snippet
            README.md: all snippets */
-        "keys": ["ctrl+shift+h"], "command": "code_fights", "args": {"check_style": true}
+        "keys": ["ctrl+shift+h"], "command": "code_fights", "args": {"styleChecker": true}
     }
 ]

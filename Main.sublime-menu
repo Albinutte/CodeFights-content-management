@@ -12,10 +12,10 @@
                     "caption": "Generate outputs",
                     "children":
                     [
-                        {"caption": "From Python", "command": "code_fights", "args": {"generateOutputs_or_validate": true, "generator_ext": "py"}},
-                        {"caption": "From C++", "command": "code_fights", "args": {"generateOutputs_or_validate": true, "generator_ext": "cpp"}},
-                        {"caption": "From Java", "command": "code_fights", "args": {"generateOutputs_or_validate": true, "generator_ext": "java"}},
-                        {"caption": "From JavaScript", "command": "code_fights", "args": {"generateOutputs_or_validate": true, "generator_ext": "js"}},
+                        {"caption": "From Python", "command": "code_fights", "args": {"generateOutputs": true, "generator_ext": "py"}},
+                        {"caption": "From C++", "command": "code_fights", "args": {"generateOutputs": true, "generator_ext": "cpp"}},
+                        {"caption": "From Java", "command": "code_fights", "args": {"generateOutputs": true, "generator_ext": "java"}},
+                        {"caption": "From JavaScript", "command": "code_fights", "args": {"generateOutputs": true, "generator_ext": "js"}},
                         { "caption": "-" }
                     ]                    
                 },
@@ -23,49 +23,49 @@
                     "caption": "Validate",
                     "children":
                     [
-                        {"caption": "Python", "command": "code_fights", "args": {"generateOutputs_or_validate": true, "validator_ext": "py"}},
-                        {"caption": "C++", "command": "code_fights", "args": {"generateOutputs_or_validate": true, "validator_ext": "cpp"}},
-                        {"caption": "Java", "command": "code_fights", "args": {"generateOutputs_or_validate": true, "validator_ext": "java"}},
-                        {"caption": "JavaScript", "command": "code_fights", "args": {"generateOutputs_or_validate": true, "validator_ext": "js"}},
+                        {"caption": "Python", "command": "code_fights", "args": {"validate": true, "validator_ext": "py"}},
+                        {"caption": "C++", "command": "code_fights", "args": {"validate": true, "validator_ext": "cpp"}},
+                        {"caption": "Java", "command": "code_fights", "args": {"validate": true, "validator_ext": "java"}},
+                        {"caption": "JavaScript", "command": "code_fights", "args": {"validate": true, "validator_ext": "js"}},
                         { "caption": "-" },
-                        {"caption": "ALL", "command": "code_fights", "args": {"generateOutputs_or_validate": true, "validator_ext": "md"}}
+                        {"caption": "ALL", "command": "code_fights", "args": {"validate": true, "validator_ext": "md"}}
                     ]                    
                 },
                 { 
-                    "caption": "Add bugfixes to python", 
+                    "caption": "Add bugfixes", 
                     "command": "code_fights", 
-                    "args": {"bugfixes_or_getLimits": true}
+                    "args": {"autoBugfixes": true}
                 },
                 {
                     "caption": "Check code style",
                     "children":
                     [
-                        {"caption": "Python", "command": "code_fights", "args": {"check_style": true, "style_checker_ext": "py"}},
-                        {"caption": "Cpp", "command": "code_fights", "args": {"check_style": true, "style_checker_ext": "cpp"}},
-                        {"caption": "Java", "command": "code_fights", "args": {"check_style": true, "style_checker_ext": "java"}},
-                        {"caption": "JavaScript", "command": "code_fights", "args": {"check_style": true, "style_checker_ext": "js"}},
+                        {"caption": "Python", "command": "code_fights", "args": {"styleChecker": true, "styleChecker_ext": "py"}},
+                        {"caption": "Cpp", "command": "code_fights", "args": {"styleChecker": true, "styleChecker_ext": "cpp"}},
+                        {"caption": "Java", "command": "code_fights", "args": {"styleChecker": true, "styleChecker_ext": "java"}},
+                        {"caption": "JavaScript", "command": "code_fights", "args": {"styleChecker": true, "styleChecker_ext": "js"}},
                         {"caption": "-"},
-                        {"caption": "ALL", "command": "code_fights", "args": {"check_style": true, "style_checker_ext": "md"}}
+                        {"caption": "ALL", "command": "code_fights", "args": {"styleChecker": true, "styleChecker_ext": "md"}}
                     ]
                 },
                 {
                     "caption": "Fix code style",
                     "children":
                     [
-                        {"caption": "Python", "command": "code_fights", "args": {"check_style": true, "style_fix": true, "style_checker_ext": "py"}},
-                        {"caption": "Cpp", "command": "code_fights", "args": {"check_style": true, "style_fix": true, "style_checker_ext": "cpp"}},
-                        {"caption": "Java", "command": "code_fights", "args": {"check_style": true, "style_fix": true, "style_checker_ext": "java"}},
-                        {"caption": "JavaScript", "command": "code_fights", "args": {"check_style": true, "style_fix": true, "style_checker_ext": "js"}},
+                        {"caption": "Python", "command": "code_fights", "args": {"styleChecker": true, "styleChecker_fix": true, "styleChecker_ext": "py"}},
+                        {"caption": "Cpp", "command": "code_fights", "args": {"styleChecker": true, "styleChecker_fix": true, "styleChecker_ext": "cpp"}},
+                        {"caption": "Java", "command": "code_fights", "args": {"styleChecker": true, "styleChecker_fix": true, "styleChecker_ext": "java"}},
+                        {"caption": "JavaScript", "command": "code_fights", "args": {"styleChecker": true, "styleChecker_fix": true, "styleChecker_ext": "js"}},
                         {"caption": "-"},
-                        {"caption": "ALL", "command": "code_fights", "args": {"check_style": true, "style_fix": true, "style_checker_ext": "md"}}
+                        {"caption": "ALL", "command": "code_fights", "args": {"styleChecker": true, "styleChecker_fix": true, "styleChecker_ext": "md"}}
                     ]
                 },
                 {
                     "caption": "Get constraints",
                     "children":
                     [
-                        {"caption": "Update Readme", "command": "code_fights", "args": {"bugfixes_or_getLimits": true, "upd": true}},
-                        {"caption": "Show Constraints", "command": "code_fights", "args": {"bugfixes_or_getLimits": true, "upd": false}}
+                        {"caption": "Update Readme", "command": "code_fights", "args": {"getLimits": true, "update_limits": true}},
+                        {"caption": "Show Constraints", "command": "code_fights", "args": {"getLimits": true, "update_limits": false}}
                     ]
                 }
             ]
