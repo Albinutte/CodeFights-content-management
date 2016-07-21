@@ -26,7 +26,7 @@ class CodeFightsCommand(sublime_plugin.TextCommand):
     def run(self, edit,
             generateOutputs=False, generator_ext=None,
             validate=False, validator_ext=None,
-            autoBugfixes=False,
+            autoBugfixes=False, autoBugfixes_validate=None,
             getLimits=False, update_limits=None,
             styleChecker=False, styleChecker_ext=None, styleChecker_fix=None,
             kill=False):
@@ -109,7 +109,8 @@ class CodeFightsCommand(sublime_plugin.TextCommand):
                     validator_ext = file_ext
                 self.thread = CodeFightsValidator(task_name, data_folder, validator_ext)
             elif command == 'autoBugfixes':
-                self.thread = CodeFightsBugfixes(task_name, data_folder, file_ext, full_path)
+                self.thread = CodeFightsBugfixes(task_name, data_folder, 
+                                                 file_ext, autoBugfixes_validate)
             elif command == 'getLimits':
                 self.thread = CodeFightsGetLimits(task_name, data_folder, update_limits)
             elif command == 'styleChecker':
@@ -280,13 +281,13 @@ class CodeFightsOutputsGenerator(threading.Thread):
 
 
 class CodeFightsBugfixes(threading.Thread):
-    def __init__(self, task_name, data_folder, ext, full_path):
+    def __init__(self, task_name, data_folder, ext, validate):
         self.task_name = task_name
         self.data_folder = data_folder
         self.ext = ext
-        self.full_path = full_path
         self.result = None
         self.queue = queue.Queue()
+        self.validate = validate
         threading.Thread.__init__(self)
 
     def run(self):
@@ -297,6 +298,10 @@ class CodeFightsBugfixes(threading.Thread):
             self.queue.put('Generating bufixes for task "{0}"...\n'.format(self.task_name))
 
             try:
+                bugCollection_path = os.path.join(self.data_folder, '_utils', 
+                                                     'automaticalBugfixes',
+                                                     'bugCollection.py')
+                imp.load_source('bugCollection', bugCollection_path)
                 automaticalBugfixes_path = os.path.join(self.data_folder, '_utils', 
                                                         'automaticalBugfixes', 
                                                         'automaticalBugfixes.py')
@@ -305,22 +310,27 @@ class CodeFightsBugfixes(threading.Thread):
             except Exception as e:
                 raise Exception(str(e) + '\n')
 
-            bugfixes = automaticalBugfixes.addingBugfixes(["", self.task_name])
-            fh, abs_path = tempfile.mkstemp()
-            with open(abs_path, 'w') as temp_snippet:
-                with open(self.full_path, 'r') as old_snippet:
-                    for line in old_snippet:
-                        temp_snippet.write('# ' + line)
-            os.close(fh)
-            os.remove(self.full_path)
-            shutil.move(abs_path, self.full_path)
-            with open(self.full_path, 'a') as snippet:
-                snippet.write('\n')
-                for line in bugfixes:
-                    snippet.write(line)
+            stream = io.StringIO()
+            args = [self.task_name, self.validate, stream]
 
-            self.queue.put('Bugfixes generated.\n')
+            thread = threading.Thread(target=automaticalBugfixes.main, args=args)
+            thread.start()
+            cur_pos = 0
+            while thread.is_alive():
+                ln = stream.tell()
+                if ln > cur_pos:
+                    new_text = stream.getvalue()[cur_pos:]
+                    self.queue.put(new_text)
+                    cur_pos += len(new_text)
+            ln = stream.tell()
+            if ln > cur_pos:
+                new_text = stream.getvalue()[cur_pos:]
+                self.queue.put(new_text)
+                cur_pos += len(new_text)                    
+            stream.close()
+
             self.result = True
+
         except Exception as e:
             self.result = False
             self.error = str(e)

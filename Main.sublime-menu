@@ -32,9 +32,11 @@
                     ]                    
                 },
                 { 
-                    "caption": "Add bugfixes", 
-                    "command": "code_fights", 
-                    "args": {"autoBugfixes": true}
+                    "caption": "Automatic bugfixes",
+                    "children": [
+                        {"caption": "Run and validate", "command": "code_fights", "args": {"autoBugfixes": true, "autoBugfixes_validate": true}},
+                        {"caption": "Run", "command": "code_fights", "args": {"autoBugfixes": true}}                        
+                    ] 
                 },
                 {
                     "caption": "Check code style",

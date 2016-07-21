@@ -14,7 +14,9 @@
         /* Launches various scripts depending on which file is open:
            <task>.py: automaticalBugfixes
            README.md: getLimits */
-        "keys": ["ctrl+shift+m"], "command": "code_fights", "args": {"autoBugfixes": true, "getLimits": true, "update_limits": true}
+        "keys": ["ctrl+shift+m"], "command": "code_fights", "args": {"autoBugfixes": true, "autoBugfixes_validate": true, 
+                                                                      "getLimits": true, 
+                                                                      "update_limits": true}
     },
     {
         /* Lunches style checker:
