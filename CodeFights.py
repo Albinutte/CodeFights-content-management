@@ -102,15 +102,17 @@ class CodeFightsCommand(sublime_plugin.TextCommand):
             if command == 'generateOutputs':
                 settings = sublime.load_settings('CodeFights.sublime-settings')
                 if generator_ext is None:
-                    generator_ext = settings.get('generate_from')                
+                    generator_ext = settings.get('generate_from')
                 self.thread = CodeFightsOutputsGenerator(task_name, data_folder, generator_ext)
             elif command == 'validate':
                 if validator_ext is None:
                     validator_ext = file_ext
                 self.thread = CodeFightsValidator(task_name, data_folder, validator_ext)
             elif command == 'autoBugfixes':
+                settings = sublime.load_settings('CodeFights.sublime-settings')
+                bug_limit = settings.get('bug_limit')
                 self.thread = CodeFightsBugfixes(task_name, data_folder, 
-                                                 file_ext, autoBugfixes_validate)
+                                                 file_ext, autoBugfixes_validate, bug_limit)
             elif command == 'getLimits':
                 self.thread = CodeFightsGetLimits(task_name, data_folder, update_limits)
             elif command == 'styleChecker':
@@ -281,16 +283,18 @@ class CodeFightsOutputsGenerator(threading.Thread):
 
 
 class CodeFightsBugfixes(threading.Thread):
-    def __init__(self, task_name, data_folder, ext, validate):
+    def __init__(self, task_name, data_folder, ext, validate, bug_limit):
         self.task_name = task_name
         self.data_folder = data_folder
         self.ext = ext
         self.result = None
         self.queue = queue.Queue()
         self.validate = validate
+        self.bug_limit = bug_limit
         threading.Thread.__init__(self)
 
     def run(self):
+        self.queue.put('at least I started')
         try:
             if self.ext != 'py':
                 raise Exception('Launch from file with ".py" extension!\n')
@@ -311,7 +315,7 @@ class CodeFightsBugfixes(threading.Thread):
                 raise Exception(str(e) + '\n')
 
             stream = io.StringIO()
-            args = [self.task_name, self.validate, stream]
+            args = [self.task_name, self.validate, self.bug_limit, stream]
 
             thread = threading.Thread(target=automaticalBugfixes.main, args=args)
             thread.start()

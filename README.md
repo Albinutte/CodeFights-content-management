@@ -12,7 +12,7 @@ Restart Sublime if it was open.
   * from `README.md`: launches validator on all snippets;
   * from `meta.json`: launches outputs generator with `-r` flag;
  * `ctrl+shift+m`:
-  * from `<task>.py`: launches auto bugfixes;
+  * from `<task>.py`: launches auto bugfixes with validation;
   * from `README.md`: launches limits getter with `--upd` flag;
  * `ctrl+shift+h`:
   * from `<task>.<ext>`: launches code style checker on current snippet;
