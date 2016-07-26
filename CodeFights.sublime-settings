@@ -4,5 +4,6 @@
 {
     // default extension to generate outputs from
     "generate_from": "py",
+    // default bug limits in autoBugfixes
     "bug_limit": 20
 }
