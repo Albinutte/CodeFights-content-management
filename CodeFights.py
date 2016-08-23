@@ -2,10 +2,8 @@ import sublime, sublime_plugin
 
 import imp
 import os
-import shutil
 import subprocess
 import sys
-import tempfile
 import threading
 
 
@@ -34,7 +32,9 @@ class CodeFightsCommand(sublime_plugin.TextCommand):
         valid_args = ['generateOutputs', 'validate', 'autoBugfixes', 'getLimits', 'styleChecker']
         ext_by_arg = {
             'generateOutputs': ['json'],
-            'validate': ['py', 'js', 'java', 'cpp', 'md'],
+            'validate': ['py', 'js', 'java', 'cpp', 'cs', 'fs', 
+                         'perl', 'php', 'rb', 'scala', 'swift', 'go', 
+                         'hs', 'md'],
             'autoBugfixes': ['py'],
             'getLimits': ['md'],
             'styleChecker': ['py', 'js', 'java', 'cpp', 'md']
