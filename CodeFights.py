@@ -211,7 +211,8 @@ class CodeFightsValidator(threading.Thread):
             def execute():
                 popen = subprocess.Popen(['node', os.path.join(validator_path, 'validator.js'), 
                                           self.task_name, self.ext],
-                                         cwd=validator_path, stdout=subprocess.PIPE)
+                                          cwd=validator_path,
+                                          stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
                 stdout_lines = iter(popen.stdout.readline, "")
                 for stdout_line in stdout_lines:
                     if is_ST3():
