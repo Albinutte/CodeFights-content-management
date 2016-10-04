@@ -11,6 +11,7 @@ Restart Sublime if it was open.
   * from `<task>.<ext>`: launches validator on current snippet;
   * from `README.md`: launches validator on all snippets;
   * from `meta.json`: launches outputs generator with `-r` flag;
+  * from `tests`: launches tests generator with `-o` flag;
  * `ctrl+shift+m`:
   * from `<task>.py`: launches auto bugfixes with validation;
   * from `README.md`: launches limits getter with `--upd` flag;

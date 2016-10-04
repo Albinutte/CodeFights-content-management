@@ -4,7 +4,7 @@
            meta.json: generateOutputs
            <task>.<ext>: validate current snippet
            README.md: validate all snippets */
-        "keys": ["ctrl+shift+c"], "command": "code_fights", "args": {"generateOutputs": true, "validate": true}
+        "keys": ["ctrl+shift+c"], "command": "code_fights", "args": {"generateOutputs": true, "validate": true, "generateTests": true}
     },
     { 
         /* Kills current process */

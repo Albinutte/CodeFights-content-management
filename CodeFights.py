@@ -27,9 +27,11 @@ class CodeFightsCommand(sublime_plugin.TextCommand):
             autoBugfixes=False, autoBugfixes_validate=None,
             getLimits=False, update_limits=None,
             styleChecker=False, styleChecker_ext=None, styleChecker_fix=None,
+            generateTests=False,
             kill=False):
 
-        valid_args = ['generateOutputs', 'validate', 'autoBugfixes', 'getLimits', 'styleChecker']
+        valid_args = ['generateOutputs', 'validate', 'autoBugfixes', 
+                      'getLimits', 'styleChecker', 'generateTests']
         ext_by_arg = {
             'generateOutputs': ['json'],
             'validate': ['py', 'js', 'java', 'cpp', 'cs', 'fs', 
@@ -37,7 +39,8 @@ class CodeFightsCommand(sublime_plugin.TextCommand):
                          'hs', 'md', 'r', 'vb'],
             'autoBugfixes': ['py'],
             'getLimits': ['md'],
-            'styleChecker': ['py', 'js', 'java', 'cpp', 'md']
+            'styleChecker': ['py', 'js', 'java', 'cpp', 'md'],
+            'generateTests': [None]
         }
         arg_by_ext = {}
         for arg in ext_by_arg:
@@ -65,13 +68,12 @@ class CodeFightsCommand(sublime_plugin.TextCommand):
             file_name = file_name.split('.')
 
             if len(file_name) < 2:
-                self.to_panel("The file has no extension!\n")
-                return
+                file_name.append(None)
 
             file_ext = file_name[-1]
             args = []
             for arg in valid_args:
-                if eval(arg):
+                if eval(arg):  #: from string to argument
                     args.append(arg)
             command = None
 
@@ -95,6 +97,7 @@ class CodeFightsCommand(sublime_plugin.TextCommand):
                             self.to_panel("Ambiguous arguments for the current file extension!\n")
                             return
                 if found_command is None:
+                    print args, ext_by_arg
                     self.to_panel("Invalid file extension!\n")
                     return
                 command = found_command
@@ -120,6 +123,11 @@ class CodeFightsCommand(sublime_plugin.TextCommand):
                     styleChecker_ext = file_ext
                 self.thread = CodeFightsStyleChecker(task_name, data_folder, 
                                                      styleChecker_ext, styleChecker_fix)
+            elif command == 'generateTests':
+                if file_name[0] != 'tests':
+                    self.to_panel('Tests file should be called "tests"!')
+                    return
+                self.thread = CodeFightsTestsGenerator(task_name, data_folder)
             else:
                 self.to_panel("No command found!\n")
                 return
@@ -421,6 +429,52 @@ class CodeFightsStyleChecker(threading.Thread):
                 self.queue.put(new_text)
                 cur_pos += len(new_text)                    
             stream.close()
+
+            self.result = True
+        except Exception as e:
+            self.result = False
+            self.error = str(e)
+
+
+class CodeFightsTestsGenerator(threading.Thread):
+    def __init__(self, task_name, data_folder):
+        self.task_name = task_name
+        self.data_folder = data_folder
+        self.result = None
+        self.queue = queue.Queue()
+        threading.Thread.__init__(self)
+
+    def run(self):
+        try:
+            self.queue.put('Tests generations for task "{0}" started...\n'.format(self.task_name))
+
+            generateTests_path = os.path.join(self.data_folder, '_utils', 'generateTests')
+
+            def excecute():
+                run_command = 'python2' if sys.platform.find('linux') != -1 else 'python'
+                popen = subprocess.Popen([run_command, os.path.join(generateTests_path, 
+                                                                    'generateTests.py'),
+                                          self.task_name, '-o'],
+                                         cwd=generateTests_path,
+                                         stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+                stdout_lines = iter(popen.stdout.readline, '')
+                for stdout_line in stdout_lines:
+                    if is_ST3():
+                        stdout_line = stdout_line.decode('utf-8')
+                        if stdout_line:
+                            stdout_line = stdout_line.replace('[31m', '::==> ').\
+                                                      replace('[39m', '')
+                            yield stdout_line
+                        else:
+                            break                        
+                    else:
+                        yield stdout_line.replace('[31m', '::==> ').replace('[39m', '')
+
+                popen.stdout.close()
+                popen.wait()
+
+            for line in excecute():
+                self.queue.put(line)
 
             self.result = True
         except Exception as e:
