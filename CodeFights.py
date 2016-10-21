@@ -36,7 +36,7 @@ class CodeFightsCommand(sublime_plugin.TextCommand):
             'generateOutputs': ['json'],
             'validate': ['py', 'js', 'java', 'cpp', 'cs', 'fs', 
                          'perl', 'php', 'rb', 'scala', 'swift', 'go', 
-                         'hs', 'md', 'r', 'vb'],
+                         'hs', 'md', 'r', 'vb', 'py3'],
             'autoBugfixes': ['py'],
             'getLimits': ['md'],
             'styleChecker': ['py', 'js', 'java', 'cpp', 'md'],
