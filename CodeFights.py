@@ -97,7 +97,6 @@ class CodeFightsCommand(sublime_plugin.TextCommand):
                             self.to_panel("Ambiguous arguments for the current file extension!\n")
                             return
                 if found_command is None:
-                    print args, ext_by_arg
                     self.to_panel("Invalid file extension!\n")
                     return
                 command = found_command
